@@ -1,9 +1,41 @@
 use magnus::{function, method, prelude::*, Error, Ruby};
 
-#[magnus::wrap(class = "Point")]
+// #[magnus::wrap(class = "Point")]
 struct Point {
     x: isize,
     y: isize,
+}
+
+// Expanded from the macro above.
+impl magnus::DataTypeFunctions for Point {}
+unsafe impl magnus::TypedData for Point {
+    fn class(ruby: &magnus::Ruby) -> magnus::RClass {
+        use magnus::{
+            value::{Lazy, ReprValue},
+            Class, RClass,
+        };
+        static CLASS: Lazy<RClass> = Lazy::new(|ruby| {
+            // Sleep added here to allow others to block on the initialization.
+            // This isn't required to reproduce the deadlock but adding it makes
+            // the deadlock hit EVERY time.
+            std::thread::sleep(std::time::Duration::from_millis(1000));
+            let class: RClass = ruby
+                .class_object()
+                .funcall("const_get", ("Point",))
+                .unwrap();
+            class.undef_default_alloc_func();
+            class
+        });
+        ruby.get_inner(&CLASS)
+    }
+    fn data_type() -> &'static magnus::DataType {
+        static DATA_TYPE: magnus::DataType =
+            ::magnus::typed_data::DataTypeBuilder::<Point>::new(unsafe {
+                std::ffi::CStr::from_bytes_with_nul_unchecked("Point\u{0}".as_bytes())
+            })
+            .build();
+        &DATA_TYPE
+    }
 }
 
 impl Point {
