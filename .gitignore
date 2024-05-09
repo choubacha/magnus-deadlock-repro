@@ -1,0 +1,14 @@
+/.bundle/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+*.bundle
+*.so
+*.o
+*.a
+mkmf.log
+target/
+.DS_Store
+.rspec_status
+.idea/

@@ -1,0 +1,11 @@
+[package]
+name = "deadlock"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+magnus = "0.6.3"

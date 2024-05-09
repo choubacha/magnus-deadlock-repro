@@ -1,0 +1,5 @@
+[workspace]
+members = [
+  "./ext/deadlock"
+]
+resolver = "2"
